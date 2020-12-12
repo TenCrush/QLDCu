@@ -1,0 +1,627 @@
+<div [@routerTransition]>
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-6">
+                    <h1> Tạo mới dân cư </h1>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content px-2">
+        <div class="container-fluid">
+            <form (submit)="save()">
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="hoVaTen">
+                                Họ và tên
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="hoVaTen" id="hoVaTen"
+                                    [(ngModel)]="dto.hoVaTen" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="ngaySinh">
+                                Ngày sinh
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text"
+                                class="form-control"
+                                bsDatepicker [(ngModel)]="dto.ngaySinh" name="ngayDi" id="ngayDi"
+                                [bsValue]="ngaySinh">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="gioiTinh">
+                                Giới tính
+                            </label>
+                            <div class="col-md-10">
+                                <div class="row">
+                                    <input type="radio" class="form-control col-6 mb-2" name="gioiTinh" value="1"
+                                        [(ngModel)]="dto.gioiTinh"> Nam<br>
+                                    <input type="radio" class="form-control col-6 mb-2" name="gioiTinh" value="0"
+                                        [(ngModel)]="dto.gioiTinh"> Nữ<br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="ngaySinh">
+                                Nhóm máu
+                            </label>
+                            <div class="col-md-10">
+                                <div class="col-md-10">
+                                    <div class="row">
+                                        <input type="radio" class="form-control col-6 mb-2" name="nhomMau" value="1"
+                                            [(ngModel)]="dto.nhomMau"> A<br>
+                                        <input type="radio" class="form-control col-6 mb-2" name="nhomMau" value="2"
+                                            [(ngModel)]="dto.nhomMau"> B<br>
+                                        <input type="radio" class="form-control col-6 mb-2" name="nhomMau" value="3"
+                                            [(ngModel)]="dto.nhomMau"> AB<br>
+                                        <input type="radio" class="form-control col-6" name="nhomMau" value="4"
+                                            [(ngModel)]="dto.nhomMau"> O<br>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="tinhTranHonNhan">
+                                Tình Trạng hôn nhân
+                            </label>
+                            <div class="col-md-10">
+                                <div class="row">
+                                    <input type="radio" class="form-control col-6 mb-2" name="tinhTranHonNhan" value="1"
+                                        [(ngModel)]="dto.tinhTranHonNhan"> Đã kết hôn<br>
+                                    <input type="radio" class="form-control col-6 mb-2" name="tinhTranHonNhan" value="2"
+                                        [(ngModel)]="dto.tinhTranHonNhan"> Chưa kết hôn<br>
+                                    <input type="radio" class="form-control col-6 mb-2" name="tinhTranHonNhan" value="3"
+                                        [(ngModel)]="dto.tinhTranHonNhan"> Ly hôn<br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="noiDKKhaiSinh">
+                                Nơi đăng kí khai sinh
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="noiDKKhaiSinh" id="noiDKKhaiSinh"
+                                    [(ngModel)]="dto.noiDKKhaiSinh" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <label class="col-md-1 col-form-label" for="queQuan">
+                                Quê quán
+                            </label>
+                            <div class="col-md-11">
+                                <input type="text" class="form-control" name="queQuan" id="queQuan"
+                                    [(ngModel)]="dto.queQuan" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <label class="col-md-1 col-form-label" for="danToc">
+                                Dân tộc
+                            </label>
+                            <div class="col-md-11">
+                                <div class="row mb-2 position-relative">
+                                    <span class="position-absolute"
+                                        style="right: 50%;transform: translate(-95%,10px);">Kinh</span>
+                                    <input (change)="changeDanToc($event)" type="checkbox" style="display: inline;"
+                                        class="form-control" name="danToc" id="danToc" value="Kinh"
+                                        [(ngModel)]="dto.danToc" placeholder="Kinh" />
+                                </div>
+
+                                <input type="text" class="form-control" name="danToc" id="danToc"
+                                    [(ngModel)]="dto.danToc" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <label class="col-md-1 col-form-label" for="tonGiao">
+                                Tôn giáo
+                            </label>
+                            <div class="col-md-11">
+                                <div class="row mb-2 position-relative">
+                                    <span class="position-absolute"
+                                        style="right: 50%;transform: translate(-95%,10px);">Không</span>
+                                    <input (change)="changeTonGiao($event)" type="checkbox" style="display: inline;"
+                                        class="form-control" name="tonGiao" id="tonGiao" value="Kinh"
+                                        [(ngModel)]="dto.tonGiao" placeholder="Kinh" />
+                                </div>
+                                <input type="text" class="form-control" name="tonGiao" id="tonGiao"
+                                    [(ngModel)]="dto.tonGiao" />
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="form-group row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <label class="col-md-1 col-form-label" for="ngaySinh">
+                                Quốc tịch
+                            </label>
+                            <div class="col-md-11">
+                                <div class="row mb-2 position-relative">
+                                    <span class="position-absolute"
+                                        style="right: 50%;transform: translate(-95%,10px);">Việt Nam</span>
+                                    <input (change)="changeQuocTich($event)" type="checkbox" style="display: inline;"
+                                        class="form-control" name="quocTich" id="quocTich" value="Kinh"
+                                        [(ngModel)]="dto.quocTich" placeholder="Kinh" />
+                                </div>
+                                <input type="text" class="form-control" name="quocTich" id="quocTich"
+                                    [(ngModel)]="dto.quocTich" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="cmnd">
+                                Số CMND/CCCD/ĐDCN
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="cmnd" id="cmnd" [(ngModel)]="dto.cmnd" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="hoChieu">
+                                Số hộ chiếu
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="hoChieu" id="hoChieu"
+                                    [(ngModel)]="dto.hoChieu" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="hocVan">
+                                Trình độ học vấn
+                            </label>
+                            <div class="col-md-10">
+                                <div class="row mb-2 position-relative">
+                                    <span class="position-absolute"
+                                        style="right: 50%;transform: translate(-95%,10px);">Đại học</span>
+                                    <input (change)="changeHocVan($event)" type="checkbox" style="display: inline;"
+                                        class="form-control" name="hocVan" id="hocVan" value="Kinh"
+                                        [(ngModel)]="dto.hocVan" placeholder="Kinh" />
+                                </div>
+                                <input type="text" class="form-control" name="hocVan" id="hocVan"
+                                    [(ngModel)]="dto.hocVan" />
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="chuyenMon">
+                                Trình độ chuyên môn
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="chuyenMon" id="chuyenMon"
+                                    [(ngModel)]="dto.chuyenMon" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="tiengDanToc">
+                                Biết tiếng dân tộc
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="tiengDanToc" id="tiengDanToc"
+                                    [(ngModel)]="dto.tiengDanToc" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="ngoaiNgu">
+                                Trình độ ngoại ngữ
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="ngoaiNgu" id="ngoaiNgu"
+                                    [(ngModel)]="dto.ngoaiNgu" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="ngheNghiep">
+                                Nghề nghiệp
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="ngheNghiep" id="ngheNghiep"
+                                    [(ngModel)]="dto.ngheNghiep" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="noiLamViec">
+                                Nơi làm việc
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="noiLamViec" id="noiLamViec"
+                                    [(ngModel)]="dto.noiLamViec" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="thuongTru">
+                                Nơi thường trú
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="thuongTru" id="thuongTru"
+                                    [(ngModel)]="dto.thuongTru" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="noiOHienNay">
+                                Nơi ở hiện nay
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="noiOHienNay" id="noiOHienNay"
+                                    [(ngModel)]="dto.noiOHienNay" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="loai">
+                                Loại
+                            </label>
+                            <div class="col-md-10">
+                                <div class="col-md-10">
+                                    <div class="row">
+                                        <input type="radio" class="form-control col-6 mb-2" name="loai" value="1"
+                                            [(ngModel)]="dto.loai"> KT1<br>
+                                        <input type="radio" class="form-control col-6 mb-2" name="loai" value="2"
+                                            [(ngModel)]="dto.loai"> KT2<br>
+                                        <input type="radio" class="form-control col-6 mb-2" name="loai" value="3"
+                                            [(ngModel)]="dto.loai"> KT3<br>
+                                        <input type="radio" class="form-control col-6 mb-2" name="loai" value="4"
+                                            [(ngModel)]="dto.loai"> KT4<br>
+                                        <input type="radio" class="form-control col-6" name="loai" value="5"
+                                            [(ngModel)]="dto.loai"> HSSV<br>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="sdt">
+                                Số điện thoại
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="sdt" id="sdt" [(ngModel)]="dto.sdt" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="hoVaTenBo">
+                                Họ tên bố
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="hoVaTenBo" id="hoVaTenBo"
+                                    [(ngModel)]="dto.hoVaTenBo" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="cmndBo">
+                                CMND/CCCD bố
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="cmndBo" id="cmndBo"
+                                    [(ngModel)]="dto.cmndBo" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="hoVaTenMe">
+                                Họ tên mẹ
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="hoVaTenMe" id="hoVaTenMe"
+                                    [(ngModel)]="dto.hoVaTenMe" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="cmndMe">
+                                CMND/CCCD mẹ
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="cmndMe" id="cmndMe"
+                                    [(ngModel)]="dto.cmndMe" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="hoVaTenVoChong">
+                                Họ tên vợ/chồng
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="hoVaTenVoChong" id="hoVaTenVoChong"
+                                    [(ngModel)]="dto.hoVaTenVoChong" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="cmndVoChong">
+                                CMND/CCCD vợ/chồng
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="cmndVoChong" id="cmndVoChong"
+                                    [(ngModel)]="dto.cmndVoChong" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="hoVaTenChuHoKhau">
+                                Họ tên chủ hộ khẩu
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="hoVaTenChuHoKhau" id="hoVaTenChuHoKhau"
+                                    [(ngModel)]="dto.hoVaTenChuHoKhau" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="cccdChuHo">
+                                CCCD chủ hộ
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="cccdChuHo" id="cccdChuHo"
+                                    [(ngModel)]="dto.cccdChuHo" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="quanHeVoiChuHo">
+                                Quan hệ với chủ hộ khẩu
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="quanHeVoiChuHo" id="quanHeVoiChuHo"
+                                    [(ngModel)]="dto.quanHeVoiChuHo" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="soSoHoKhau">
+                                Số sổ hộ khẩu
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="soSoHoKhau" id="soSoHoKhau"
+                                    [(ngModel)]="dto.soSoHoKhau" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="hoVaTenChuSoHuuNhaDangO">
+                                Họ và tên chủ sở hữu nhà đang ở
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="hoVaTenChuSoHuuNhaDangO"
+                                    id="hoVaTenChuSoHuuNhaDangO" [(ngModel)]="dto.hoVaTenChuSoHuuNhaDangO" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="quanHeVoiChuSoHuuNhaDangO">
+                                Quan hệ với chủ sở hữu nhà đang ở
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="quanHeVoiChuSoHuuNhaDangO"
+                                    id="quanHeVoiChuSoHuuNhaDangO" [(ngModel)]="dto.quanHeVoiChuSoHuuNhaDangO" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="sdtChuSoHuuNhaDangO">
+                                Số điện thoại chủ sở hữu nhà đang ở
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="sdtChuSoHuuNhaDangO"
+                                    id="sdtChuSoHuuNhaDangO" [(ngModel)]="dto.sdtChuSoHuuNhaDangO" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="daDi">
+                                Đã đi
+                            </label>
+                            <div class="col-md-10">
+                                <input type="checkbox" class="form-control" name="daDi" id="daDi"
+                                    [(ngModel)]="dto.daDi" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="tsTa">
+                                Có TA/TS
+                            </label>
+                            <div class="col-md-10">
+                                <input type="checkbox" class="form-control" name="tsTa" id="tsTa"
+                                    [(ngModel)]="dto.tsTa" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="daChet">
+                                Đã chết
+                            </label>
+                            <div class="col-md-10">
+                                <input type="checkbox" class="form-control" name="daChet" id="daChet"
+                                    [(ngModel)]="dto.daChet" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="ngayDen">
+                                Ngày đến
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text"
+                                class="form-control"
+                                bsDatepicker [(ngModel)]="dto.ngayDen" name="ngayDen" id="ngayDen"
+                                [bsValue]="ngayDen">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="noiDen">
+                                Nơi chuyển đến
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="noiDen" id="noiDen"
+                                    [(ngModel)]="dto.noiDen">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="ngayDi">
+                                Ngày đi
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text"
+                                class="form-control"
+                                bsDatepicker [(ngModel)]="dto.ngayDi" name="ngayDi" id="ngayDi"
+                                [bsValue]="ngayDi">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="col-md-2 col-form-label" for="noiDi">
+                                Nơi chuyển đi
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="noiDi" id="noiDi" [(ngModel)]="dto.noiDi">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-1 col-form-label" for="noiDi">
+                        Ghi chú
+                    </label>
+                    <div class="col-md-11">
+                        <textarea type="text" class="form-control" name="noiDi" id="noiDi"
+                            [(ngModel)]="dto.ghiChu"> </textarea>
+                    </div>
+                </div>
+
+
+                <div class="col-12 text-center mb-5">
+                    <button class="btn bg-blue" type="submit">
+                        <i class="fa fa-save"></i>
+                        Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
