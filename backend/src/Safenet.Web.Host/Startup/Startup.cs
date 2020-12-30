@@ -20,6 +20,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using Abp.IdentityServer4;
 using Safenet.Authorization.Users;
+using Microsoft.Extensions.FileProviders;
 
 namespace Safenet.Web.Host.Startup
 {
@@ -136,10 +137,18 @@ namespace Safenet.Web.Host.Startup
 
             app.UseStaticFiles();
 
+          
+
             app.UseRouting();
 
             app.UseAuthentication();
 
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(_appConfiguration["App:FileLocation"]),
+                RequestPath = _appConfiguration["App:RequestFileLocation"]
+            });
+            app.UseAuthorization();
             app.UseAbpRequestLocalization();
 
           

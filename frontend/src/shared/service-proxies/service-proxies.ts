@@ -1728,6 +1728,122 @@ export class UserServiceProxy {
     }
 }
 
+
+
+
+
+@Injectable({
+    providedIn: "root"
+})
+export class FileServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "";
+    }
+
+    uploadFile(dto: FormData | undefined): Observable<FileDTO> {
+        let url_ = this.baseUrl + "/api/File/UploadFile";
+        url_ = url_.replace(/[?&]$/, "");
+        const content_ = dto;
+        let options_: any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({})
+        };
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_: any) => {
+            return this.processUploadFile(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUploadFile(<any>response_);
+                } catch (e) {
+                    return <Observable<FileDTO>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileDTO>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUploadFile(response: HttpResponseBase): Observable<FileDTO> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+                (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); } };
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                let result200: any = null;
+                let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = FileDTO.fromJS(resultData200);
+                return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileDTO>(<any>null);
+    }
+
+}
+
+
+export interface IFileDTO {
+    id: number;
+    ten: string;
+    url: string | undefined;
+
+}
+
+export class FileDTO implements IFileDTO {
+    id: number;
+    ten: string;
+    url: string | undefined;
+
+    constructor(data?: IFileDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.ten = data["ten"];
+            this.url = data["url"];
+
+        }
+    }
+
+    static fromJS(data: any): FileDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new FileDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["ten"] = this.ten;
+        data["url"] = this.url;
+
+        return data;
+    }
+}
+
+
+
+
 @Injectable({ providedIn: 'root' })
 export class DanCuService {
     private http: HttpClient;
@@ -1793,8 +1909,15 @@ export class DanCuService {
     }
 
 
-    getAllForView(): Observable<DanCuDtoResultDto> {
-        let url_ = this.baseUrl + "/api/services/app/DanCu/GetAllDanCu";
+    getAllForView(filterText: string | undefined, gender: number | undefined,
+        loaiKT: number | undefined,): Observable<DanCuDtoResultDto> {
+        let url_ = this.baseUrl + "/api/services/app/DanCu/GetAllDanCu?";
+        if (filterText !== undefined && filterText !== null)
+            url_ += "filterText=" + encodeURIComponent("" + filterText) + "&";
+        if (gender !== undefined && filterText !== null)
+            url_ += "gender=" + encodeURIComponent("" + gender) + "&";
+        if (loaiKT !== undefined && loaiKT !== null)
+            url_ += "loaiKT=" + encodeURIComponent("" + loaiKT) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: any = {
@@ -2043,6 +2166,10 @@ export class DanCuDto {
     ngayDi: moment.Moment | undefined;
     noiDi: string | undefined;
     ghiChu: string | undefined;
+    idAvatars: string | undefined;
+    avatars: FileDTO[] | undefined;
+    dsIdAvatars : number[] | undefined;
+
 
     constructor(data?: DanCuDto) {
         if (data) {
@@ -2055,6 +2182,11 @@ export class DanCuDto {
 
     init(data?: any) {
         if (data) {
+            if (data["dsIdAvatars"] && data["dsIdAvatars"].constructor === Array) {
+                this.dsIdAvatars = [];
+                for (let item of data["dsIdAvatars"])
+                    this.dsIdAvatars.push(item);
+            }
             this.id = data["id"];
             this.hoVaTen = data["hoVaTen"];
             this.ngaySinh = data["ngaySinh"] ? moment(data["ngaySinh"].toString()) : <any>undefined;
@@ -2100,7 +2232,12 @@ export class DanCuDto {
             this.ngayDi = data["ngayDi"] ? moment(data["ngayDi"].toString()) : <any>undefined;
             this.noiDi = data["noiDi"];
             this.ghiChu = data["ghiChu"];
-
+            this.idAvatars = data["idAvatars"];
+            if (data["avatars"] && data["avatars"].constructor === Array) {
+                this.avatars = [];
+                for (let item of data["avatars"])
+                    this.avatars.push(FileDTO.fromJS(item));
+            }
         }
     }
 
@@ -2113,6 +2250,12 @@ export class DanCuDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        if (this.dsIdAvatars && this.dsIdAvatars.constructor === Array) {
+            data["dsIdAvatars"] = [];
+            for (let item of this.dsIdAvatars)
+                data["dsIdAvatars"].push(item);
+        }
+
         data["id"] = this.id;
         data["hoVaTen"] = this.hoVaTen;
         data["ngaySinh"] = this.ngaySinh ? this.ngaySinh.toISOString() : <any>undefined;
@@ -2124,6 +2267,7 @@ export class DanCuDto {
         data["tonGiao"] = this.tonGiao;
         data["quocTich"] = this.quocTich;
         data["cmnd"] = this.cmnd;
+        data["queQuan"] = this.queQuan;
         data["hoChieu"] = this.hoChieu;
         data["hocVan"] = this.hocVan;
         data["chuyenMon"] = this.chuyenMon;
@@ -2156,6 +2300,13 @@ export class DanCuDto {
         data["ngayDi"] = this.ngayDi ? this.ngayDi.toISOString() : <any>undefined;
         data["noiDi"] = this.noiDi;
         data["ghiChu"] = this.ghiChu;
+        data["idAvatars"] = this.idAvatars;
+        if (this.avatars && this.avatars.constructor === Array) {
+            data["avatars"] = [];
+            for (let item of this.avatars)
+                data["avatars"].push(item.toJSON());
+        }
+
         return data;
     }
 

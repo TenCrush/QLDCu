@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using Safenet.Bussiness.File.Dto;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -54,5 +55,7 @@ namespace Safenet.Bussiness.DanCu
         public DateTime? NgayDi { get; set; }
         public string NoiDi { get; set; }
         public string GhiChu { get; set; }
+        public string IdAvatars { get; set; }
+
     }
 }

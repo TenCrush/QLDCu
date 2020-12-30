@@ -39,7 +39,13 @@ import { SidebarUserPanelComponent } from './layout/sidebar-user-panel.component
 import { SidebarMenuComponent } from './layout/sidebar-menu.component';
 import { DanCuComponent } from './dan-cu/dan-cu.component';
 import { CreateOrEditDanCuComponent } from './dan-cu/create-or-edit/create-or-edit-dan-cu.component';
-import { BsDatepickerConfig, BsDatepickerModule, BsLocaleService } from 'ngx-bootstrap/datepicker';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+
+
+
+import { FilePondModule, registerPlugin } from 'ngx-filepond';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+registerPlugin(FilePondPluginImagePreview);
 
 @NgModule({
     declarations: [
@@ -70,8 +76,7 @@ import { BsDatepickerConfig, BsDatepickerModule, BsLocaleService } from 'ngx-boo
         SidebarUserPanelComponent,
         SidebarMenuComponent,
         DanCuComponent,
-        CreateOrEditDanCuComponent
-
+        CreateOrEditDanCuComponent,
     ],
     imports: [
         CommonModule,
@@ -88,6 +93,7 @@ import { BsDatepickerConfig, BsDatepickerModule, BsLocaleService } from 'ngx-boo
         SharedModule,
         NgxPaginationModule,
         BsDatepickerModule,
+        FilePondModule
     ],
     providers: [
 
@@ -104,10 +110,11 @@ import { BsDatepickerConfig, BsDatepickerModule, BsLocaleService } from 'ngx-boo
         CreateUserDialogComponent,
         EditUserDialogComponent,
         ResetPasswordDialogComponent,
-
+        CreateOrEditDanCuComponent
     ],
 })
 export class AppModule {
     constructor() {
+
     }
 }

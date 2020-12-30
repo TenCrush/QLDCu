@@ -1,10 +1,11 @@
-import { Component, Injector, OnInit } from '@angular/core';
+import { Component, Injector, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { AppComponentBase } from '@shared/app-component-base';
-import { DanCuDto, DanCuService } from '@shared/service-proxies/service-proxies';
+import { AppConsts } from '@shared/AppConsts';
+import { DanCuDto, DanCuService, FileServiceProxy } from '@shared/service-proxies/service-proxies';
 import { result } from 'lodash-es';
-
+declare var $;
 @Component({
     templateUrl: 'create-or-edit-dan-cu.component.html',
     animations: [appModuleAnimation()]
@@ -17,15 +18,43 @@ export class CreateOrEditDanCuComponent extends AppComponentBase implements OnIn
     ngayDen: Date;
     ngaySinh: Date;
     status = 0;
+    @ViewChild('avatarUploader', { static: false }) avatarUploader: any;
+    avatar = [];
+    dsIdAvatars: string = "";
+    uploaderOptions = {
+        multiple: true,
+        labelIdle: "Click để thêm ảnh",
+        labelFileLoading: "Đang tải ảnh",
+        labelFileLoadError: "Gặp lỗi khi tải ảnh",
+        labelFileProcessing: "Đang tải ảnh",
+        labelFileProcessingComplete: "Tải ảnh thành công",
+        labelFileProcessingError: "Gặp lỗi khi tải ảnh",
+        labelTapToCancel: "Huỷ",
+        labelTapToRetry: "Thử lại",
+        labelTapToUndo: "Undo",
+        labelButtonRemoveItem: "Xoá",
+        labelButtonAbortItemLoad: "Huỷ",
+        acceptedFileTypes: 'image/jpeg, image/png, image/jpg',
+        credits: false,
+        allowImagePreview: true
+    }
+
     constructor(
         injector: Injector,
         private _danCuService: DanCuService,
         private _router: Router,
-        private _activatedRoute: ActivatedRoute
+        private _activatedRoute: ActivatedRoute,
+        private _fileAppService: FileServiceProxy
+
     ) {
         super(injector);
     }
-
+    deactiveNhomMau(event) {
+        console.log(event);
+        if (event.srcElement.attributes.val && this.dto.nhomMau == +event.srcElement.attributes.val.value) {
+            this.dto.nhomMau = null;
+        }
+    }
     ngOnInit() {
         this.ngayDi = this.dto.ngayDi ? this.dto.ngayDi.toDate() : null;
         this.ngayDen = this.dto.ngayDen ? this.dto.ngayDen.toDate() : null;
@@ -37,9 +66,32 @@ export class CreateOrEditDanCuComponent extends AppComponentBase implements OnIn
         let id = +this._activatedRoute.snapshot.paramMap.get('id');
         if (id) {
             this.getDanCuForEdit(id);
+        } else {
+            this.dto.danToc = "Kinh";
+            this.dto.tonGiao = "Không";
+            this.dto.quocTich = "Việt Nam";
         }
 
+
     }
+
+
+    pondHandleAddFile(event: any) {
+        // let self = this;
+        // let formData = new FormData();
+        // formData.append("file", event.file.file);
+        // this._fileAppService.uploadFile(formData).subscribe(result => {
+        //     if (result.id == -1) {
+        //         this.avatarUploader.removeFile();
+        //         this.notify.error("Lỗi khi tải file", "Lỗi", {
+        //             "showDuration": "3000",
+        //         });
+        //     } else {
+        //         self.dto.idAvatar = result.id;
+        //     }
+        // });
+    }
+
 
     processDataBeforeSave() {
     }
@@ -54,11 +106,39 @@ export class CreateOrEditDanCuComponent extends AppComponentBase implements OnIn
                 this.dto.hoChieu = null;
                 this.dto.ngaySinh = null;
                 this.dto.hoChieu = null;
+                this.avatarUploader.removeFiles();
+            } else {
+                this.dto.avatars.forEach(avatar => {
+                    this.avatarUploader.addFile(AppConsts.remoteServiceBaseUrl + avatar.url);
+                });
             }
         });
     }
 
+
+    pondHandleRemoveFile(event) {
+        console.log(event);
+        // this.avatarUploader.removeFile(event.file.id);
+        // this.dto.idAvatar = null;
+    }
+
     save() {
+        let self = this;
+        this.avatarUploader.getFiles().map(m => {
+            let formData = new FormData();
+            formData.append("file", m.file);
+            this._fileAppService.uploadFile(formData).subscribe(result => {
+                if (result.id == -1) {
+                    this.avatarUploader.removeFile();
+                    this.notify.error("Lỗi khi tải file", "Lỗi", {
+                        "showDuration": "3000",
+                    });
+                } else {
+                    self.dsIdAvatars += result.id + "`";
+                }
+                this.dto.idAvatars = self.dsIdAvatars.substring(0, self.dsIdAvatars.length - 1);
+            });
+        });
         try {
             this._danCuService.createOrEditDanCu(this.dto).subscribe(result => {
                 if (result) {
@@ -69,7 +149,6 @@ export class CreateOrEditDanCuComponent extends AppComponentBase implements OnIn
         } catch (error) {
             this.notify.error("Dữ liệu không hợp lệ");
         }
-
     }
 
     changeDanToc(event) {

@@ -1,4 +1,5 @@
 import { Component, Injector, OnInit } from '@angular/core';
+import { NumberValueAccessor } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CreateUserDialogComponent } from '@app/users/create-user/create-user-dialog.component';
 import { EditUserDialogComponent } from '@app/users/edit-user/edit-user-dialog.component';
@@ -16,10 +17,13 @@ import { finalize } from 'rxjs/operators';
 })
 export class DanCuComponent extends AppComponentBase implements OnInit {
     danCus: DanCuDto[] = [];
-    keyword = '';
-    isActive: boolean | null;
-    advancedFiltersVisible = false;
+    filterText = '';
+    hasTaTS: boolean | null;
+    gender : number | null;
+    loaiKT : number | null;
+
     isTableLoading = false;
+
     constructor(
         injector: Injector,
         private _danCuService: DanCuService,
@@ -36,7 +40,7 @@ export class DanCuComponent extends AppComponentBase implements OnInit {
     getDataPage(event?: any) {
         console.log(event);
         this.isTableLoading = true;
-        this._danCuService.getAllForView().subscribe(m => {
+        this._danCuService.getAllForView(this.filterText, this.gender, this.loaiKT).subscribe(m => {
             this.isTableLoading = false;
             this.danCus = m.items;
         });
@@ -70,4 +74,3 @@ export class DanCuComponent extends AppComponentBase implements OnInit {
         );
     }
 }
-

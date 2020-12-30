@@ -8,7 +8,7 @@
                 <div class="col-6 text-right">
                     <a href="javascript:;" class="btn bg-blue" (click)="create()">
                         <i class="fa fa-plus-square"></i>
-                        {{ "Create" | localize }}
+                        Thêm mới
                     </a>
                 </div>
             </div>
@@ -17,19 +17,114 @@
     <section class="content px-2">
         <div class="container-fluid">
             <div class="card">
+
                 <div class="card-header">
                     <div class="input-group">
-                        <div class="input-group-prepend">
+
+                        <input type="text" class="form-control" name="keyword"
+                            [placeholder]="'Tìm kiếm theo họ tên, CMND, CCCD, ĐDCN'" [(ngModel)]="filterText"
+                            (keyup.enter)="getDataPage(1)" />
+                        <div class="input-group-append">
                             <button type="button" class="btn bg-blue" (click)="getDataPage(1)">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
-                        <input type="text" class="form-control" name="keyword"
-                            [placeholder]="'SearchWithThreeDot' | localize" [(ngModel)]="keyword"
-                            (keyup.enter)="getDataPage(1)" />
+                    </div>
 
+                    <div class="card mb-0 mt-1">
+                        <div class="card-body">
+                            <form class="form-horizontal">
+                                <div class="row">
+                                    <!-- <div class="col-md-12">
+                                        <input type="text" class="form-control" name="keyword"
+                                            [placeholder]="'Năm sinh'" [(ngModel)]="da" />
+                                    </div> -->
+
+                                    <div class="col-md-2">
+                                        <div class="form-group row">
+                                            <label class="col-md-6 col-form-label" for="hasTaTS">
+                                                Có TA/TS :
+                                            </label>
+                                            <div class="col-md-6">
+                                                <span style="display: flex;" class="mb-2">
+                                                    <input type="checkbox" class="form-control" id="hasTaTS"
+                                                        name="hasTaTS" [(ngModel)]="hasTaTS" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-group row">
+                                            <label class="col-md-6 col-form-label" for="gioiTinh">
+                                                Giới tính :
+                                            </label>
+                                            <div class="col-md-6">
+                                                <span style="display: flex;" class="mb-2">
+                                                    <span style="width: 50%;">Nữ</span>
+                                                    <input type="radio" class="form-control" id="gender" name="gender"
+                                                        [value]="0" [(ngModel)]="gender" />
+
+                                                </span>
+                                                <span style="display: flex;">
+                                                    <span style="width: 50%;">Nam</span>
+                                                    <input type="radio" class="form-control" id="gender" name="gender"
+                                                        [value]="1" [(ngModel)]="gender" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <label class="col-md-2 col-form-label" for="gender">
+                                                Loại KT :
+                                            </label>
+                                            <div class="col-md-10">
+                                                <span style="display: flex;" class="mb-2">
+                                                    <span style="width: 50%;">KT1</span>
+                                                    <input type="radio" class="form-control" id="loaiKT" name="loaiKT"
+                                                        [value]="1" [(ngModel)]="loaiKT" />
+                                                </span>
+                                                <span style="display: flex;" class="mb-2">
+                                                    <span style="width: 50%;">KT2</span>
+                                                    <input type="radio" class="form-control" id="loaiKT" name="loaiKT"
+                                                        [value]="2" [(ngModel)]="loaiKT" />
+                                                </span>
+                                                <span style="display: flex;" class="mb-2">
+                                                    <span style="width: 50%;">KT3</span>
+                                                    <input type="radio" class="form-control" id="loaiKT" name="loaiKT"
+                                                        [value]="3" [(ngModel)]="loaiKT" />
+                                                </span>
+                                                <span style="display: flex;" class="mb-2">
+                                                    <span style="width: 50%;">KT4</span>
+                                                    <input type="radio" class="form-control" id="loaiKT" name="loaiKT"
+                                                        [value]="4" [(ngModel)]="loaiKT" />
+                                                </span>
+                                                <span style="display: flex;" class="mb-2">
+                                                    <span style="width: 50%;">HSSV</span>
+                                                    <input type="radio" class="form-control" id="loaiKT" name="loaiKT"
+                                                        [value]="5" [(ngModel)]="loaiKT" />
+                                                </span>
+                                                <span style="display: flex;">
+                                                    <span style="width: 50%;">KT2 đi</span>
+                                                    <input type="radio" class="form-control" id="loaiKT" name="loaiKT"
+                                                        [value]="6" [(ngModel)]="loaiKT" />
+                                                </span>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
+
+
+
                 <div class="card-body table-responsive p-0">
                     <table class="table table-hover text-nowrap" [busy]="isTableLoading">
                         <thead class="bg-light">
@@ -48,7 +143,7 @@
                         <tbody>
                             <tr *ngFor="let dc of danCus; let i = index">
 
-                                <td>{{ i  + 1}}</td>
+                                <td>{{ i + 1}}</td>
                                 <td>{{ dc.hoVaTen }}</td>
                                 <td>{{ dc.ngaySinh | date: 'dd/MM/yyyy' }}</td>
                                 <td>{{ dc.gioiTinh }}</td>
@@ -66,8 +161,7 @@
                                         <i class="fas fa-trash"></i>
                                         Xóa
                                     </button>
-                                    <button type="button" class="btn btn-sm bg-success mx-2"
-                                        (click)="duplicate(dc)">
+                                    <button type="button" class="btn btn-sm bg-success mx-2" (click)="duplicate(dc)">
                                         <i class="fas fa-copy"></i>
                                         Nhân bản
                                     </button>

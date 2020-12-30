@@ -5,6 +5,7 @@ using Safenet.Authorization.Users;
 using Safenet.MultiTenancy;
 using Safenet.Bussiness.DepositHistory;
 using Safenet.Bussiness.DanCu;
+using Safenet.Bussiness.File;
 
 namespace Safenet.EntityFrameworkCore
 {
@@ -23,6 +24,8 @@ namespace Safenet.EntityFrameworkCore
         public DbSet<DepositHistories> DepositHistories { get; set; }
         public DbSet<ProcessedFiles> ProcessedFiles { get; set; }
         public DbSet<DanCu> DanCus { get; set; }
+        public DbSet<File> Files { get; set; }
+
 
     }
 }

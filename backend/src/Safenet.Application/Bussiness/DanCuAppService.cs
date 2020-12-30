@@ -3,7 +3,12 @@ using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Safenet.Bussiness.DanCu;
+using Safenet.Bussiness.File.Dto;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Safenet.Bussiness
@@ -12,21 +17,100 @@ namespace Safenet.Bussiness
     public class DanCuAppService : ApplicationService
     {
         public readonly IRepository<DanCu.DanCu> _danCuRepository;
+        public readonly IRepository<File.File, long> _fileRepository;
 
-        public DanCuAppService(IRepository<DanCu.DanCu> danCuRepository)
+
+        public DanCuAppService(IRepository<DanCu.DanCu> danCuRepository, IRepository<File.File, long> fileRepository)
         {
             _danCuRepository = danCuRepository;
+            _fileRepository = fileRepository;
         }
 
 
-        public async Task<ListResultDto<DanCu.DanCu>> GetAllDanCu()
+        public async Task<ListResultDto<DanCu.DanCu>> GetAllDanCu(string filterText, int? gender, int? loaiKT)
         {
-            return new ListResultDto<DanCu.DanCu>(await _danCuRepository.GetAll().ToListAsync());
+            return new ListResultDto<DanCu.DanCu>(await _danCuRepository.GetAll()
+                .Where(m =>
+                (
+                (string.IsNullOrEmpty(filterText) || m.HoVaTen.Contains(filterText.Trim()) || m.CMND.Contains(filterText.Trim())) &&
+                (!gender.HasValue || (m.GioiTinh.HasValue && m.GioiTinh.Value == gender.Value)) &&
+                (!loaiKT.HasValue || (m.Loai.HasValue && m.Loai.Value == loaiKT.Value))
+                )
+            )
+                .ToListAsync());
         }
 
-        public async Task<DanCu.DanCu> GetForEdit([Required] int id)
+        public async Task<DanCuDto> GetForEdit([Required] int id)
         {
-            return await _danCuRepository.GetAsync(id);
+            var dto = await _danCuRepository.GetAsync(id);
+            var avatars = new List<File.File>();
+
+            if (!string.IsNullOrEmpty(dto.IdAvatars))
+            {
+                try
+                {
+                    var dsIds = dto.IdAvatars.Split("`", StringSplitOptions.RemoveEmptyEntries).Select(Int64.Parse).ToList();
+                    avatars = _fileRepository.GetAll().Where(m => dsIds.Contains(m.Id)).ToList();
+                }
+                catch (System.Exception)
+                {
+
+                }
+            }
+
+            return new DanCuDto()
+            {
+                Id = dto.Id,
+                HoVaTen = dto.HoVaTen,
+                NgaySinh = dto.NgaySinh,
+                NhomMau = dto.NhomMau,
+                GioiTinh = dto.GioiTinh,
+                TinhTranHonNhan = dto.TinhTranHonNhan,
+                NoiDKKhaiSinh = dto.NoiDKKhaiSinh,
+                QueQuan = dto.QueQuan,
+                DanToc = dto.DanToc,
+                TonGiao = dto.TonGiao,
+                QuocTich = dto.QuocTich,
+                CMND = dto.CMND,
+                HoChieu = dto.HoChieu,
+                HocVan = dto.HocVan,
+                ChuyenMon = dto.ChuyenMon,
+                TiengDanToc = dto.TiengDanToc,
+                NgoaiNgu = dto.NgoaiNgu,
+                NgheNghiep = dto.NgheNghiep,
+                NoiLamViec = dto.NoiLamViec,
+                ThuongTru = dto.ThuongTru,
+                NoiOHienNay = dto.NoiOHienNay,
+                Loai = dto.Loai,
+                SDT = dto.SDT,
+                HoVaTenMe = dto.HoVaTenMe,
+                CMNDMe = dto.CMNDMe,
+                HoVaTenBo = dto.HoVaTenBo,
+                CMNDBo = dto.CMNDBo,
+                HoVaTenVoChong = dto.HoVaTenVoChong,
+                CMNDVoChong = dto.CMNDVoChong,
+                HoVaTenChuHoKhau = dto.HoVaTenChuHoKhau,
+                CCCDChuHo = dto.CCCDChuHo,
+                QuanHeVoiChuHo = dto.QuanHeVoiChuHo,
+                SoSoHoKhau = dto.SoSoHoKhau,
+                HoVaTenChuSoHuuNhaDangO = dto.HoVaTenChuSoHuuNhaDangO,
+                QuanHeVoiChuSoHuuNhaDangO = dto.QuanHeVoiChuSoHuuNhaDangO,
+                SDTChuSoHuuNhaDangO = dto.SDTChuSoHuuNhaDangO,
+                TsTa = dto.TsTa,
+                DaChet = dto.DaChet,
+                DaDi = dto.DaDi,
+                NgayDen = dto.NgayDen,
+                NoiDen = dto.NoiDen,
+                NgayDi = dto.NgayDi,
+                NoiDi = dto.NoiDi,
+                GhiChu = dto.GhiChu,
+                IdAvatar = dto.IdAvatars,
+                Avatars = avatars.Select(m => new FileDTO() {
+                    Id = m.Id,
+                    Ten = m.Ten,
+                    URL = m.URL
+                }).ToList()
+            };
         }
 
         [HttpGet]
@@ -101,6 +185,8 @@ namespace Safenet.Bussiness
             entity.NoiDen = dto.NoiDen;
             entity.NgayDi = dto.NgayDi;
             entity.NoiDi = dto.NoiDi;
+            entity.GhiChu = dto.GhiChu;
+            entity.IdAvatars = dto.IdAvatars;
             await _danCuRepository.UpdateAsync(entity);
             return await Task.FromResult(true);
         }
