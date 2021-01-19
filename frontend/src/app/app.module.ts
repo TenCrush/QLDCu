@@ -41,10 +41,12 @@ import { DanCuComponent } from './dan-cu/dan-cu.component';
 import { CreateOrEditDanCuComponent } from './dan-cu/create-or-edit/create-or-edit-dan-cu.component';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
+import {NgbPaginationModule, NgbAlertModule} from '@ng-bootstrap/ng-bootstrap';
 
 
 import { FilePondModule, registerPlugin } from 'ngx-filepond';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import { JwPaginationComponent } from 'jw-angular-pagination';
 registerPlugin(FilePondPluginImagePreview);
 
 @NgModule({
@@ -93,7 +95,8 @@ registerPlugin(FilePondPluginImagePreview);
         SharedModule,
         NgxPaginationModule,
         BsDatepickerModule,
-        FilePondModule
+        FilePondModule,
+        NgbPaginationModule
     ],
     providers: [
 
@@ -110,6 +113,7 @@ registerPlugin(FilePondPluginImagePreview);
         CreateUserDialogComponent,
         EditUserDialogComponent,
         ResetPasswordDialogComponent,
+        DanCuComponent,
         CreateOrEditDanCuComponent
     ],
 })

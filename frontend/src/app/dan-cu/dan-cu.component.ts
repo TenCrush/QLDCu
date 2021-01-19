@@ -19,10 +19,11 @@ export class DanCuComponent extends AppComponentBase implements OnInit {
     danCus: DanCuDto[] = [];
     filterText = '';
     hasTaTS: boolean | null;
-    gender : number | null;
-    loaiKT : number | null;
-
+    gender: number | null;
+    loaiKT: number | null;
+    total = 0;
     isTableLoading = false;
+    pageOfItems: any[];
 
     constructor(
         injector: Injector,
@@ -36,13 +37,14 @@ export class DanCuComponent extends AppComponentBase implements OnInit {
         this.getDataPage();
     }
 
-
     getDataPage(event?: any) {
         console.log(event);
         this.isTableLoading = true;
-        this._danCuService.getAllForView(this.filterText, this.gender, this.loaiKT).subscribe(m => {
+
+        this._danCuService.getAllForView(this.filterText, this.gender, this.loaiKT, 10, event ? event * 10 : 0).subscribe(m => {
             this.isTableLoading = false;
             this.danCus = m.items;
+            this.total = m.totalCount;
         });
     }
 

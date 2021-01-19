@@ -88,5 +88,45 @@ namespace Safenet.Controllers
             }
             return errorDTO;
         }
+
+        [HttpPost]
+        public async Task<string> UploadFiles([FromForm] List<IFormFile> files)
+        {
+            var dsIds = new List<long>();
+
+            foreach (var file in files)
+            {
+                if (file == null) continue;
+                long size = file.Length;
+                if (file.Length > 0)
+                {
+                    var currentDate = DateTime.Now.ToString("yyyy/MM/dd");
+                    var rootLocation = _appConfiguration["App:FileLocation"];
+                    var storeFileLocation = rootLocation + currentDate;
+                    if (!Directory.Exists(storeFileLocation))
+                        Directory.CreateDirectory(storeFileLocation);
+                    var fileEntity = new Bussiness.File.File();
+                    fileEntity.Size = size;
+                    fileEntity.Loai = Path.GetExtension(file.FileName);
+                    fileEntity.Ten = file.FileName;
+
+                    if (string.IsNullOrEmpty(fileEntity.Loai) || !allowFileExtension.Contains(fileEntity.Loai.ToUpper())) continue;
+
+                    long milliseconds = DateTime.Now.Ticks;
+                    var newName = Path.GetFileNameWithoutExtension(file.FileName);
+                    newName = newName + "_" + AbpSession.UserId + "_" + milliseconds + Path.GetExtension(file.FileName);
+                    using (var stream = System.IO.File.Create(storeFileLocation + "\\" + newName))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    fileEntity.Ten = newName;
+                    fileEntity.URL = _appConfiguration["App:RequestFileLocation"] + "/" + currentDate + "/" + fileEntity.Ten;
+                    var id = await _fileRepository.InsertAndGetIdAsync(fileEntity);
+                    dsIds.Add(id);
+                }
+            }
+            return string.Join("`", dsIds);
+        }
     }
 }

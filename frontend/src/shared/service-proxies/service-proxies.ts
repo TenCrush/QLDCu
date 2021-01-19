@@ -1791,6 +1791,54 @@ export class FileServiceProxy {
         return _observableOf<FileDTO>(<any>null);
     }
 
+
+
+    uploadFiles(dto: FormData | undefined): Observable<string> {
+        let url_ = this.baseUrl + "/api/File/UploadFiles";
+        url_ = url_.replace(/[?&]$/, "");
+        const content_ = dto;
+        let options_: any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({})
+        };
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_: any) => {
+            return this.processUploadFiles(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUploadFiles(<any>response_);
+                } catch (e) {
+                    return <Observable<string>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<string>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUploadFiles(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+                (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); } };
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                let result200: any = null;
+                let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+                return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<string>(<any>null);
+    }
+
 }
 
 
@@ -1910,7 +1958,8 @@ export class DanCuService {
 
 
     getAllForView(filterText: string | undefined, gender: number | undefined,
-        loaiKT: number | undefined,): Observable<DanCuDtoResultDto> {
+        loaiKT: number | undefined, maxResultCount?: number | undefined, skipCount?: number | undefined,
+        sorting?: string | undefined): Observable<DanCuDtoResultDto> {
         let url_ = this.baseUrl + "/api/services/app/DanCu/GetAllDanCu?";
         if (filterText !== undefined && filterText !== null)
             url_ += "filterText=" + encodeURIComponent("" + filterText) + "&";
@@ -1918,6 +1967,14 @@ export class DanCuService {
             url_ += "gender=" + encodeURIComponent("" + gender) + "&";
         if (loaiKT !== undefined && loaiKT !== null)
             url_ += "loaiKT=" + encodeURIComponent("" + loaiKT) + "&";
+        if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (filterText !== undefined)
+            url_ += "FilterText=" + encodeURIComponent("" + filterText) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: any = {
@@ -2075,6 +2132,7 @@ export class DanCuService {
 
 export class DanCuDtoResultDto {
     items: DanCuDto[] | undefined;
+    totalCount: number | undefined;
 
     constructor(data?: DanCuDtoResultDto) {
         if (data) {
@@ -2086,6 +2144,8 @@ export class DanCuDtoResultDto {
     }
 
     init(data?: any) {
+        this.totalCount = data["totalCount"];
+
         if (data) {
             if (Array.isArray(data["items"])) {
                 this.items = [] as any;
@@ -2104,6 +2164,7 @@ export class DanCuDtoResultDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
         if (Array.isArray(this.items)) {
             data["items"] = [];
             for (let item of this.items)
@@ -2168,7 +2229,7 @@ export class DanCuDto {
     ghiChu: string | undefined;
     idAvatars: string | undefined;
     avatars: FileDTO[] | undefined;
-    dsIdAvatars : number[] | undefined;
+    dsIdAvatars: number[] | undefined;
 
 
     constructor(data?: DanCuDto) {

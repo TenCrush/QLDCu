@@ -4,12 +4,15 @@ using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Safenet.Bussiness.DanCu;
+using Safenet.Bussiness.DanCu.Dtos;
 using Safenet.Bussiness.File.Dto;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Linq.Dynamic.Core;
+using Abp.Linq.Extensions;
 
 namespace Safenet.Bussiness
 {
@@ -27,16 +30,18 @@ namespace Safenet.Bussiness
         }
 
 
-        public async Task<ListResultDto<DanCu.DanCu>> GetAllDanCu(string filterText, int? gender, int? loaiKT)
+        public async Task<PagedResultDto<DanCu.DanCu>> GetAllDanCu(FilterDanCuDto input)
         {
-            return new ListResultDto<DanCu.DanCu>(await _danCuRepository.GetAll()
+            var result = _danCuRepository.GetAll()
                 .Where(m =>
-                (
-                (string.IsNullOrEmpty(filterText) || m.HoVaTen.Contains(filterText.Trim()) || m.CMND.Contains(filterText.Trim())) &&
-                (!gender.HasValue || (m.GioiTinh.HasValue && m.GioiTinh.Value == gender.Value)) &&
-                (!loaiKT.HasValue || (m.Loai.HasValue && m.Loai.Value == loaiKT.Value))
-                )
-            )
+                (string.IsNullOrEmpty(input.filterText) || m.HoVaTen.Contains(input.filterText.Trim()) || m.CMND.Contains(input.filterText.Trim())) &&
+                (!input.gender.HasValue || (m.GioiTinh.HasValue && m.GioiTinh.Value == input.gender.Value)) &&
+                (!input.loaiKT.HasValue || (m.Loai.HasValue && m.Loai.Value == input.loaiKT.Value))
+                );
+
+            return new PagedResultDto<DanCu.DanCu>(result.Count(),
+                await result.OrderBy(input.Sorting ?? "Id ASC")
+                .PageBy(input)
                 .ToListAsync());
         }
 
@@ -105,7 +110,8 @@ namespace Safenet.Bussiness
                 NoiDi = dto.NoiDi,
                 GhiChu = dto.GhiChu,
                 IdAvatar = dto.IdAvatars,
-                Avatars = avatars.Select(m => new FileDTO() {
+                Avatars = avatars.Select(m => new FileDTO()
+                {
                     Id = m.Id,
                     Ten = m.Ten,
                     URL = m.URL

@@ -146,7 +146,7 @@
                                 <td>{{ i + 1}}</td>
                                 <td>{{ dc.hoVaTen }}</td>
                                 <td>{{ dc.ngaySinh | date: 'dd/MM/yyyy' }}</td>
-                                <td>{{ dc.gioiTinh }}</td>
+                                <td>{{ dc.gioiTinh == 1 ? 'nam' : 'nữ' }}</td>
                                 <td>{{ dc.cmnd }}</td>
                                 <td>{{ dc.sdt }}</td>
                                 <td>{{ dc.thuongTru }}</td>
@@ -178,13 +178,16 @@
                     <div class="row">
                         <div class="col-sm-4 col-12 text-center">
                             <p class="mb-0 my-2">
-                                {{ "TotalRecordsCount" | localize: 0 }}
+                                {{ "TotalRecordsCount" | localize: total }}
                             </p>
                         </div>
                         <div class="col-sm-4 col-12">
                             <div class="float-sm-right m-auto">
-                                <abp-pagination-controls id="server" (pageChange)="getDataPage($event)">
-                                </abp-pagination-controls>
+                                <ngb-pagination
+                                [maxSize]="5"
+                                [pageSize]="10"
+                                [collectionSize]="total"
+                                (pageChange)="getDataPage($event)"></ngb-pagination>
                             </div>
                         </div>
                     </div>
